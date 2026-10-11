@@ -7,6 +7,9 @@ from torchvision import transforms
 from torchvision.datasets import ImageFolder
 
 DATASET_PATH = "sea_animal_dataset"
+mlflow.set_tracking_uri(
+    f"sqlite:///{os.path.join(os.path.dirname(os.path.abspath(__file__)), 'mlflow.db')}"
+)
 BEST_MODEL = "models:/mobilenet_model@production"
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -22,7 +25,7 @@ transform = transforms.Compose(
 
 @st.cache_resource
 def load_model():
-    return mlflow.pytorch.load_model(BEST_MODEL).to(DEVICE).eval()
+    return mlflow.pytorch.load_model(BEST_MODEL, map_location=DEVICE).to(DEVICE).eval()
 
 
 @st.cache_data
