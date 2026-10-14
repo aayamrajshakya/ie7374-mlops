@@ -35,7 +35,7 @@ class TestPhysics(unittest.TestCase):
 
     def test_speed_of_light(self):
         self.assertEqual(C, 299792458)
-        self.assertEqual(C, 3e8)
+        self.assertNotEqual(C, 3e8)
 
     def test_celsius_to_fahrenheit(self):
         self.assertEqual(celsius_to_fahrenheit(0), 32.0)

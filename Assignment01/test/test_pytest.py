@@ -31,7 +31,7 @@ def test_acceleration_value():
 
 def test_speed_of_light():
     assert C == 299792458
-    assert C == 3e8
+    assert C != 3e8
 
 
 def test_celsius_to_fahrenheit():
