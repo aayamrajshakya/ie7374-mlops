@@ -4,8 +4,8 @@ on:
         branches:
             - main
         paths:
-            - 'Assignment01/Lab01/**'
-            - '.github/workflows/unittest_action_A1L1.yml'
+            - "Assignment01/**"
+            - ".github/workflows/unittest_action_A1L1.yml"
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -16,19 +16,34 @@ jobs:
             - name: Set up Python
               uses: actions/setup-python@v4
               with:
-                python-version: 3.11
+                  python-version: 3.11
 
             - name: Install dependencies
-              run: pip install -r Assignment01/Lab01/deps.txt
+              run: pip install -r Assignment01/deps.txt
 
             - name: Run unittests
-              run: python3 -m unittest Assignment01.Lab01.test.test_unittest
+              run: python3 -m unittest Assignment01.test.test_unittest
               continue-on-error: false
 
             - name: Notify on success
               if: success()
               run: echo "Unit tests passed successfully"
 
-            - name: Notify on failure
+            - name: Send failure notification email
               if: failure()
-              run: echo "Unit tests failed"
+              uses: dawidd6/action-send-mail@v3
+              with:
+                  server_address: smtp.gmail.com
+                  server_port: 465
+                  username: ${{ secrets.GMAIL_USERNAME }}
+                  password: ${{ secrets.GMAIL_APP_PASSWORD }}
+                  subject: "CI Failed (Unit Tests): ${{ github.repository }}"
+                  to: ${{ secrets.MY_EMAIL }}
+                  from: "GitHub Actions <${{ secrets.GMAIL_USERNAME }}>"
+                  body: |
+                      Hello Aayam,
+
+                      The workflow test has failed for ${{ github.repository }} on commit ${{ github.sha }}.
+
+                      Check the run logs here:
+                      ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
