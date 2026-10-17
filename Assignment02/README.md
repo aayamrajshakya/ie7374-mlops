@@ -1,4 +1,6 @@
-# Sea Animal Classifier
+# Assignment 02: Experiment Tracking w/ MLflow
+
+(Sea animal classifier with transfer learning using MobileNet)
 
 This guide explains how to set up the project, run the model pipeline (`runner.py`), and launch the Streamlit app (`gui.py`). I used the dataset in this lab from the [Kaggle Sea Animals Image Dataset](https://www.kaggle.com/datasets/vencerlanz09/sea-animals-image-dataste/data).
 
@@ -21,14 +23,14 @@ Assignment02/
 
 ---
 
-## Prerequisites & Environment Setup
+## Setup
 
 > [!TIP]
 > I exclusively use [`uv`](https://docs.astral.sh/uv/getting-started/installation/), which is superior to `pip`.
 
 ```bash
-git clone https://github.com/aayamrajshakya/machine-learning-operations
-cd machine-learning-operations/Assignment02
+git clone https://github.com/aayamrajshakya/ie7374-mlops
+cd ie7374-mlops/Assignment02
 uv sync
 ```
 
