@@ -2,3 +2,5 @@ lab_*/		# ignoring all the environments
 .pytest_cache/
 __pycache__/
 .venv/
+*.pyc
+.env
