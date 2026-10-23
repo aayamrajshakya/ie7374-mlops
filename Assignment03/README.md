@@ -63,6 +63,10 @@ To view the Airflow UI, visit [http://localhost:8080](http://localhost:8080)
 > - **Authentication**: I noticed that Airflow generates a different password every single time. So for the convenience of myself and the TA, I disabled authentication altogether by using the `AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS=True` config option, which disables authentication and automatically grants admin permissions to all users.
 > - **Storage Choice**: I originally tried using Google Cloud Storage to store the data, but the university-provided GCP account was hard to use with lots of restrictions. Instead, I decided to save the json files locally in `data/btc_prices/` and mounted that folder into Docker. It keeps the whole setup clean, self-contained, and easy for anyone to clone and run.
 > - **Auto execution**: Also, I added `restart: always` in the docker compose file so the container keeps running in the background without needing human intervention. Since the whole point of this program is to alert of price changes, I thought setting it to always run would make a lot more sense. At one point, I actually thought of setting up Google Compute Engine VM to run it 24/7, but that would've been out of scope for this assignment and would've just added unnecessary complexity. So here we are, running it locally with automatic restarts :)
+>   
+>   ![Docker ps](assets/docker_ps.png)
+>   
+>   *As seen above from `docker ps`, the container was created 13 hours ago, but automatically started back up ("Up 2 hours") on its own when I turned on my laptop this morning.*
 
 
 ### 3. Test DAG manually

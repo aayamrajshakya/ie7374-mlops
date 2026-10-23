@@ -1,5 +1,6 @@
 services:
   airflow:
+    container_name: btc-price-monitor
     build: .
     restart: always
     env_file:
