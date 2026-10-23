@@ -4,7 +4,8 @@
 
 I built an automated pipeline using Apache Airflow and Docker that continuously tracks Bitcoin's price swings. Basically, every 10 minutes it hits FreeCryptoAPI to fetch the live BTC price, saves the timestamped data locally as JSON files, and checks the last 1 hour of price history (7 intervals). If the price rose or dropped by 3% compared to where it was an hour ago, it triggers an immediate email alert straight to my inbox via Gmail SMTP. If not, it skips the email and just waits for the next 10-minute tick to check again.
 
-(can be tuned with `CHANGE_THRESHOLD` param in `src/config.py`)
+*(can be tuned with `CHANGE_THRESHOLD` param in `src/config.py`)*
+
 
 ```mermaid
 flowchart LR
@@ -49,7 +50,11 @@ Assignment03/
 Copy `.env.example` to `.env` and fill in your credentials:
 ```bash
 cp .env.example .env
+chmod -R 777 data   # gives write permissions so docker can save price json files
 ```
+
+> [!NOTE]  
+> **Storage Choice**: I originally tried using Google Cloud Storage to store the data, but the university-provided GCP account was hard to use with lots of restrictions. Instead, I decided to save the json files locally in `data/btc_prices/` and mounted that folder into Docker. It keeps the whole setup clean, self-contained, and easy for anyone to clone and run.
 
 
 ### 2. Start Airflow via Docker
@@ -57,26 +62,29 @@ cp .env.example .env
 docker compose up -d --build
 ```
 
-To view the Airflow UI, visit [http://localhost:8080](http://localhost:8080)
+To view the Airflow UI, visit [http://localhost:8080](http://localhost:8080) and toggle the switch next to `btc_price_monitor` to **ON** to unpause the DAG and let it run automatically.
 
 > [!NOTE]  
-> - **Authentication**: I noticed that Airflow generates a different password every single time. So for the convenience of myself and the TA, I disabled authentication altogether by using the `AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS=True` config option, which disables authentication and automatically grants admin permissions to all users.
-> - **Storage Choice**: I originally tried using Google Cloud Storage to store the data, but the university-provided GCP account was hard to use with lots of restrictions. Instead, I decided to save the json files locally in `data/btc_prices/` and mounted that folder into Docker. It keeps the whole setup clean, self-contained, and easy for anyone to clone and run.
-> - **Auto execution**: Also, I added `restart: always` in the docker compose file so the container keeps running in the background without needing human intervention. Since the whole point of this program is to alert of price changes, I thought setting it to always run would make a lot more sense. At one point, I actually thought of setting up Google Compute Engine VM to run it 24/7, but that would've been out of scope for this assignment and would've just added unnecessary complexity. So here we are, running it locally with automatic restarts :)
->   
->   ![Docker ps](assets/docker_ps.png)
->   
->   *As seen above from `docker ps`, the container was created 13 hours ago, but automatically started back up ("Up 2 hours") on its own when I turned on my laptop this morning.*
+> **Authentication**: I noticed that Airflow generates a different password every single time. So for the convenience of myself and the TA, I disabled authentication altogether by using the `AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS=True` config option, which disables authentication and automatically grants admin permissions to all users.
 
 
 ### 3. Test DAG manually
+> [!TIP]  
+> For the purpose of testing the system for grading, please adjust the parameters `CHANGE_THRESHOLD` (to a smaller val like `0.0001`) and `LOOKBACK_STEPS` (eg: `2`) inside `src/config.py` since the price of Bitcoin might not swing by 3% in an hour (which is what I set for this project). You also don't need to rebuild the Docker image at all when you edit this because `./src` is mounted as a live volume into `/opt/airflow/src`, meaning any changes you save on your local machine are reflected inside the running container in real-time.
+
 To trigger an immediate execution test from inside the container (`btc_price_monitor` is the `<dag_id>`):
 ```bash
 docker compose exec airflow airflow dags test btc_price_monitor
 ```
 
-> [!TIP]  
-> For the purpose of testing the system for grading, please adjust the parameters `CHANGE_THRESHOLD` (to a smaller val like `0.0001`) and `LOOKBACK_STEPS` (eg: `2`) inside `src/config.py` since the price of Bitcoin might not swing by 3% in an hour (which is what I set for this project). You also don't need to rebuild the Docker image at all when you edit this because `./src` is mounted as a live volume into `/opt/airflow/src`, meaning any changes you save on your local machine are reflected inside the running container in real-time.
+> [!NOTE]  
+> **Auto execution**: Also, I added `restart: always` in the docker compose file so the container keeps running in the background without needing human intervention. Since the whole point of this program is to alert of price changes, I thought setting it to always run would make a lot more sense. At one point, I actually thought of setting up Google Compute Engine VM to run it 24/7, but that would've been out of scope for this assignment and would've just added unnecessary complexity. So here we are, running it locally with automatic restarts :)
+>   
+> ![Docker ps](assets/docker_ps.png)
+>   
+> *As seen above from `docker ps`, the container was created 13 hours ago, but automatically started back up ("Up 2 hours") on its own when I turned on my laptop this morning.*
+
+
 
 
 ### 4. Stop containers
