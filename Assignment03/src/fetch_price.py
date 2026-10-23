@@ -19,6 +19,7 @@ def fetch_price():
     response.raise_for_status()
 
     data = response.json()
+    # print(f"Raw response: {response.text}")
     btc_data = data["symbols"][0]
 
     now_utc = datetime.datetime.now(datetime.timezone.utc)

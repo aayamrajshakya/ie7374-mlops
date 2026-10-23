@@ -1,0 +1,18 @@
+services:
+  airflow:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
+      - PYTHONPATH=/opt/airflow
+      - AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS=True
+    volumes:
+      - ./dag.py:/opt/airflow/dags/dag.py
+      - ./src:/opt/airflow/src
+      - ./data:/opt/airflow/data
+    ports:
+      - "8080:8080"
+    command: standalone
