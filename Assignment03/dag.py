@@ -1,6 +1,9 @@
 from datetime import datetime
 from airflow import DAG
-from airflow.providers.standard.operators.python import BranchPythonOperator, PythonOperator
+from airflow.providers.standard.operators.python import (
+    BranchPythonOperator,
+    PythonOperator,
+)
 from airflow.providers.standard.operators.empty import EmptyOperator
 
 from src.config import INTERVAL_MINUTES, CHANGE_THRESHOLD, LOOKBACK_STEPS
@@ -64,6 +67,8 @@ with DAG(
             ti.xcom_push(key="curr_price", value=curr_price)
             ti.xcom_push(key="prev_price", value=prev_price)
             ti.xcom_push(key="pct_change", value=pct_change)
+            ti.xcom_push(key="curr_time", value=curr_data["timestamp_utc"])
+            ti.xcom_push(key="prev_time", value=past_record["timestamp_utc"])
             return "email_alert"
 
         return "no_email_alert"
@@ -79,6 +84,12 @@ with DAG(
         pct_change = ti.xcom_pull(
             task_ids="eval_price_change_and_branch_out", key="pct_change"
         )
+        curr_time = ti.xcom_pull(
+            task_ids="eval_price_change_and_branch_out", key="curr_time"
+        )
+        prev_time = ti.xcom_pull(
+            task_ids="eval_price_change_and_branch_out", key="prev_time"
+        )
 
         send_email_alert(
             sender=sender_email,
@@ -87,6 +98,8 @@ with DAG(
             curr_price=curr_price,
             prev_price=prev_price,
             pct_change=pct_change,
+            curr_time=curr_time,
+            prev_time=prev_time,
         )
 
     check_price_branch = BranchPythonOperator(
