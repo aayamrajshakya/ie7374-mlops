@@ -28,6 +28,8 @@ Assignment03/
 ├── data/
 │   └── btc_prices/         # folder where all the btc price json files get saved locally
 │       └── .gitkeep        # keeps the folder tracked in git so it exists on clone
+├── logs/                   # folder where airflow task and scheduler logs are stored
+│   └── .gitkeep        # keeps the folder tracked in git so it exists on clone
 ├── docker-compose.yml      # spins up airflow standalone and mounts our folders into the container
 ├── Dockerfile              # builds our airflow image
 ├── pyproject.toml          # UV thingy
@@ -50,7 +52,7 @@ Assignment03/
 Copy `.env.example` to `.env` and fill in your credentials:
 ```bash
 cp .env.example .env
-chmod -R 777 data   # gives write permissions so docker can save price json files
+chmod -R 777 data logs   # gives write permissions so docker can save price json files and logs
 ```
 
 > [!NOTE]  

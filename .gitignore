@@ -5,6 +5,8 @@ __pycache__/
 *.pyc
 .env
 !.env.example
+logs/*
+!logs/.gitkeep
 Assignment03/data/btc_prices/*.json
 !Assignment03/data/btc_prices/.gitkeep
 
