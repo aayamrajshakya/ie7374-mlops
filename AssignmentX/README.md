@@ -52,8 +52,8 @@ Running `main.py --train` also creates these two folders, which are gitignored s
 ## Setup
 
 ### Prerequisites
-- [uv](https://docs.astral.sh/uv/) (the project needs Python 3.14+, which uv fetches for you)
-- Marketaux API token ([marketaux.com](https://www.marketaux.com/)), only needed if you want to harvest fresh news
+- [uv](https://docs.astral.sh/uv/)
+- Marketaux API token ([marketaux.com](https://www.marketaux.com/)), only needed if you want to harvest fresh news, which you won't need since I already have the Parquet file
 
 ### 1. Install dependencies
 ```bash
@@ -67,7 +67,8 @@ uv run python benchmark.py --harvest      # or --harvest 2 for more pages
 uv run python benchmark.py --baseline
 ```
 
-`marketaux_data.parquet` and `baseline.json` are already included, so you can skip this step.
+> [!TIP]  
+> `marketaux_data.parquet` and `baseline.json` are already included, so you can skip this step.
 
 > [!NOTE]  
 > **Zero leakage**: Marketaux gives each article a sentiment score between -1 and 1 for every ticker it mentions. The model only ever sees the article description. The score is turned into a label afterwards (above `0.15` positive, below `-0.15` negative, otherwise neutral) and is only used to grade the predictions. Base FinBERT got a macro F1 of 0.2939 on it, which is the hurdle the fine-tuned model has to clear.
